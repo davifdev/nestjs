@@ -1,27 +1,60 @@
 import { Injectable } from '@nestjs/common';
-
+import { MessageEntity } from './entities/message.entity';
 @Injectable()
 export class MessageService {
-  findAll(limit: any, offset: any): string {
-    return `This route returned all messages limit: ${limit} offset: ${offset}`;
+  private lastId = 1;
+  private messages: MessageEntity[] = [
+    {
+      id: 1,
+      text: 'This is a message test',
+      from: 'Jhon',
+      to: 'Jane',
+      isRead: false,
+      date: new Date(),
+    },
+  ];
+
+  findAll() {
+    return this.messages;
   }
 
-  findOne(messageId: string): string {
-    return `This route returned unique message with id: ${messageId}`;
+  findOne(messageId: string) {
+    return this.messages.find((item) => item.id === Number(messageId));
   }
 
-  create(body: { message: string; new_key: string }): string {
-    return `This route create on message: ${body.message}  key: ${body.new_key}`;
-  }
-
-  update(messageId: string, body: { message?: string; new_key?: string }) {
-    return {
-      messageId,
+  create(body: Omit<MessageEntity, 'id'>) {
+    this.lastId++;
+    const newMessage: MessageEntity = {
+      id: this.lastId,
       ...body,
     };
+
+    this.messages.push(newMessage);
+    return newMessage;
   }
 
-  delete(messageId: string): string {
-    return `Message with id: ${messageId} was deleted success.`;
+  update(messageId: string, body: Omit<Partial<MessageEntity>, 'id'>) {
+    const messageExistIndex = this.messages.findIndex(
+      (item) => item.id === Number(messageId),
+    );
+
+    if (messageExistIndex >= 0) {
+      const existingMessage = this.messages[messageExistIndex];
+
+      this.messages[messageExistIndex] = {
+        ...existingMessage,
+        ...body,
+      };
+    }
+  }
+
+  remove(messageId: string) {
+    const messageExsistIndex = this.messages.findIndex(
+      (item) => item.id === Number(messageId),
+    );
+
+    if (messageExsistIndex >= 0) {
+      this.messages.splice(messageExsistIndex, 1);
+    }
   }
 }

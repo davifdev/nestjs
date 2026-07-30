@@ -11,6 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
+import { MessageEntity } from './entities/message.entity';
 
 @Controller('message')
 export class MessageController {
@@ -20,7 +21,8 @@ export class MessageController {
   @Get()
   findAll(@Query() pagination: { limit: string; offset: string }) {
     const { limit = 10, offset = 0 } = pagination;
-    return this.messageService.findAll(limit, offset);
+    console.log(`limit: ${limit} offset: ${offset}`);
+    return this.messageService.findAll();
   }
 
   @HttpCode(HttpStatus.OK)
@@ -31,7 +33,7 @@ export class MessageController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  create(@Body() body: { message: string; new_key: string }) {
+  create(@Body() body: Omit<MessageEntity, 'id'>) {
     return this.messageService.create(body);
   }
 
@@ -39,7 +41,7 @@ export class MessageController {
   @Patch(':messageId')
   update(
     @Param('messageId') messageId: string,
-    @Body() body: { message?: string; new_key?: string },
+    @Body() body: Omit<MessageEntity, 'id'>,
   ) {
     return this.messageService.update(messageId, body);
   }
@@ -47,6 +49,6 @@ export class MessageController {
   @HttpCode(HttpStatus.OK)
   @Delete(':messageId')
   delete(@Param('messageId') messageId: string) {
-    return this.messageService.delete(messageId);
+    return this.messageService.remove(messageId);
   }
 }

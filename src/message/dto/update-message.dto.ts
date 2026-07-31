@@ -1,15 +1,4 @@
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
-export class UpdateMessageDto {
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(3, { message: 'text must be at least 3 characters' })
-  public readonly text?: string;
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateMessageDto } from './create-message-dto';
 
-  @IsString()
-  @IsNotEmpty()
-  public readonly from?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  public readonly to?: string;
-}
+export class UpdateMessageDto extends PartialType(CreateMessageDto) {}

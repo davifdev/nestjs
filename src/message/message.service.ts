@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { MessageEntity } from './entities/message.entity';
+import { CreateMessageDto } from './dto/create-message-dto';
+import { UpdateMessageDto } from './dto/update-message.dto';
 @Injectable()
 export class MessageService {
   private lastId = 1;
@@ -18,43 +20,63 @@ export class MessageService {
     return this.messages;
   }
 
-  findOne(messageId: string) {
-    return this.messages.find((item) => item.id === Number(messageId));
+  throwNotFoundError(message: string) {
+    throw new NotFoundException(message);
   }
 
-  create(body: Omit<MessageEntity, 'id'>) {
+  findOne(messageId: string) {
+    const message = this.messages.find((item) => item.id === Number(messageId));
+
+    if (message) return message;
+
+    // throw new HttpException('Message not found', HttpStatus.NOT_FOUND);
+    this.throwNotFoundError('Message not found');
+  }
+
+  create(createMessageDto: CreateMessageDto) {
     this.lastId++;
     const newMessage: MessageEntity = {
       id: this.lastId,
-      ...body,
+      ...createMessageDto,
+      isRead: false,
+      date: new Date(),
     };
 
     this.messages.push(newMessage);
     return newMessage;
   }
 
-  update(messageId: string, body: Omit<Partial<MessageEntity>, 'id'>) {
+  update(messageId: string, updateMessageDto: UpdateMessageDto) {
     const messageExistIndex = this.messages.findIndex(
       (item) => item.id === Number(messageId),
     );
 
-    if (messageExistIndex >= 0) {
-      const existingMessage = this.messages[messageExistIndex];
-
-      this.messages[messageExistIndex] = {
-        ...existingMessage,
-        ...body,
-      };
+    if (messageExistIndex < 0) {
+      this.throwNotFoundError('Message not found');
     }
+
+    const existingMessage = this.messages[messageExistIndex];
+
+    const messageUpdated = (this.messages[messageExistIndex] = {
+      ...existingMessage,
+      ...updateMessageDto,
+    });
+
+    return messageUpdated;
   }
 
   remove(messageId: string) {
-    const messageExsistIndex = this.messages.findIndex(
+    const messageExistIndex = this.messages.findIndex(
       (item) => item.id === Number(messageId),
     );
 
-    if (messageExsistIndex >= 0) {
-      this.messages.splice(messageExsistIndex, 1);
+    if (messageExistIndex < 0) {
+      this.throwNotFoundError('Message not found');
     }
+
+    const message = this.messages[messageExistIndex];
+    this.messages.splice(messageExistIndex, 1);
+
+    return message;
   }
 }

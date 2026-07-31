@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -48,7 +49,7 @@ export class MessageController {
 
   @HttpCode(HttpStatus.OK)
   @Delete(':messageId')
-  delete(@Param('messageId') messageId: string) {
+  delete(@Param('messageId', ParseIntPipe) messageId: string) {
     return this.messageService.remove(messageId);
   }
 }

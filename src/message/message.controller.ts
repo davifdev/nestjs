@@ -11,8 +11,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
-import { type CreateMessageDto } from './dto/create-message-dto';
-import { type UpdateMessageDto } from './dto/update-message.dto';
+import { CreateMessageDto } from './dto/create-message-dto';
+import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Controller('message')
 export class MessageController {

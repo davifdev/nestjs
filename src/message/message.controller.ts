@@ -6,13 +6,14 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
-import { MessageEntity } from './entities/message.entity';
-
+import { CreateMessageDto } from './dto/create-message-dto';
+import { UpdateMessageDto } from './dto/update-message.dto';
 @Controller('message')
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
@@ -33,22 +34,22 @@ export class MessageController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  create(@Body() body: Omit<MessageEntity, 'id'>) {
-    return this.messageService.create(body);
+  create(@Body() createMessageDto: CreateMessageDto) {
+    return this.messageService.create(createMessageDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Patch(':messageId')
   update(
     @Param('messageId') messageId: string,
-    @Body() body: Omit<MessageEntity, 'id'>,
+    @Body() updateMessadeDto: UpdateMessageDto,
   ) {
-    return this.messageService.update(messageId, body);
+    return this.messageService.update(messageId, updateMessadeDto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Delete(':messageId')
-  delete(@Param('messageId') messageId: string) {
+  delete(@Param('messageId', ParseIntPipe) messageId: string) {
     return this.messageService.remove(messageId);
   }
 }

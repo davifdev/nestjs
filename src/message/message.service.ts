@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MessageEntity } from './entities/message.entity';
+import { Message } from './entities/message.entity';
 import { CreateMessageDto } from './dto/create-message-dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 @Injectable()
 export class MessageService {
   private lastId = 1;
-  private messages: MessageEntity[] = [
+  private messages: Message[] = [
     {
       id: 1,
       text: 'This is a message test',
@@ -35,7 +35,7 @@ export class MessageService {
 
   create(createMessageDto: CreateMessageDto) {
     this.lastId++;
-    const newMessage: MessageEntity = {
+    const newMessage: Message = {
       id: this.lastId,
       ...createMessageDto,
       isRead: false,

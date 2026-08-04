@@ -28,7 +28,7 @@ export class MessageController {
 
   @HttpCode(HttpStatus.OK)
   @Get(':messageId')
-  findOne(@Param('messageId') messageId: string) {
+  findOne(@Param('messageId', ParseIntPipe) messageId: number) {
     return this.messageService.findOne(messageId);
   }
 
@@ -41,7 +41,7 @@ export class MessageController {
   @HttpCode(HttpStatus.OK)
   @Patch(':messageId')
   update(
-    @Param('messageId') messageId: string,
+    @Param('messageId') messageId: number,
     @Body() updateMessadeDto: UpdateMessageDto,
   ) {
     return this.messageService.update(messageId, updateMessadeDto);
@@ -49,7 +49,7 @@ export class MessageController {
 
   @HttpCode(HttpStatus.OK)
   @Delete(':messageId')
-  delete(@Param('messageId', ParseIntPipe) messageId: string) {
+  delete(@Param('messageId', ParseIntPipe) messageId: number) {
     return this.messageService.remove(messageId);
   }
 }

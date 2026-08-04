@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MessageModule } from '../message/message.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PersonsModule } from '../persons/persons.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -16,6 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true, // Sincroniza o banco de dados com as entidades (não recomendado para produção)
     }),
     MessageModule,
+    PersonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

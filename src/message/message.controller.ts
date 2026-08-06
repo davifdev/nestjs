@@ -14,16 +14,15 @@ import {
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message-dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 @Controller('message')
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  findAll(@Query() pagination: { limit: string; offset: string }) {
-    const { limit = 10, offset = 0 } = pagination;
-    console.log(`limit: ${limit} offset: ${offset}`);
-    return this.messageService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.messageService.findAll(paginationDto);
   }
 
   @HttpCode(HttpStatus.OK)

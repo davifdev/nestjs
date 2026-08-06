@@ -3,10 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
+import { Message } from '../../message/entities/message.entity';
 @Entity()
 export class Person {
   @PrimaryGeneratedColumn()
@@ -27,4 +28,10 @@ export class Person {
 
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @OneToMany(() => Message, (message) => message.from)
+  sendsMenssage: Message[];
+
+  @OneToMany(() => Message, (message) => message.to)
+  receivesMessage: Message[];
 }

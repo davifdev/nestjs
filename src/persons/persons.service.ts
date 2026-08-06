@@ -4,7 +4,6 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Person } from './entities/person.entity';
-
 @Injectable()
 export class PersonsService {
   constructor(
@@ -13,7 +12,7 @@ export class PersonsService {
   ) {}
 
   create(createPersonDto: CreatePersonDto) {
-    const newPerson: Omit<Person, 'id'> = {
+    const newPerson = {
       name: createPersonDto.name,
       email: createPersonDto.email,
       passwordHash: createPersonDto.password,
@@ -26,6 +25,10 @@ export class PersonsService {
   async findOne(id: number) {
     const person = await this.personRepository.findOne({
       where: { id },
+      relations: {
+        sendsMenssage: true,
+        receivesMessage: true,
+      },
     });
 
     if (!person) throw new NotFoundException(`Person with id ${id} not found`);

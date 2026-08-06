@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Person } from '../../persons/entities/person.entity';
 @Entity()
 export class Message {
   @PrimaryGeneratedColumn()
@@ -12,10 +15,14 @@ export class Message {
 
   @Column({ type: 'varchar', length: 255 })
   text: string;
-  from: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  to: string;
+  @ManyToOne(() => Person, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'from' })
+  from: Person;
+
+  @ManyToOne(() => Person, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'to' })
+  to: Person;
 
   @Column({ type: 'boolean', default: false })
   isRead: boolean;

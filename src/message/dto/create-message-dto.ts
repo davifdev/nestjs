@@ -1,19 +1,23 @@
-import { IsBoolean, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsPositive,
+  IsString,
+  MinLength,
+} from 'class-validator';
 export class CreateMessageDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3, { message: 'text must be at least 3 characters' })
   public readonly text: string;
 
-  @IsString()
-  @IsNotEmpty()
-  public readonly from: string;
+  @IsPositive()
+  public readonly fromId: number;
 
-  @IsString()
-  @IsNotEmpty()
-  public readonly to: string;
+  @IsPositive()
+  public readonly toId: number;
 
   @IsBoolean()
   @IsNotEmpty()
-  isRead: boolean;
+  isRead: boolean = false;
 }

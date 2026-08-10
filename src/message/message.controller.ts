@@ -22,9 +22,14 @@ import { TimingConnectionInterceptor } from '../common/interceptors/time-connect
 import { ErrorHandlingInterceptor } from '../common/interceptors/error-handling.interceptor';
 import { SimpleCacheInterceptor } from '../common/interceptors/simple-cache.interceptor';
 import { ChangeDataInterceptor } from '../common/interceptors/change-data.interceptor';
+import { AuthTokenInterceptor } from '../common/interceptors/auth-token.interceptor';
 @Controller('message')
 @UsePipes(ParseIntIdPipe)
-@UseInterceptors(SimpleCacheInterceptor, ChangeDataInterceptor)
+@UseInterceptors(
+  SimpleCacheInterceptor,
+  ChangeDataInterceptor,
+  AuthTokenInterceptor,
+)
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 

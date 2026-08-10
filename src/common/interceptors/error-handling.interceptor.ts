@@ -1,6 +1,12 @@
-import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 import { catchError, throwError } from 'rxjs';
-
+@Injectable()
 export class ErrorHandlingInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler<any>) {
     console.log('ErrorHandlingInterceptor executado ANTES');

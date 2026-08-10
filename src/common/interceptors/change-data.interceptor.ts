@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+import {
+  type CallHandler,
+  type ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 import { map } from 'rxjs';
-
+@Injectable()
 export class ChangeDataInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler<any>) {
     console.log('ChangeData executado antes.');

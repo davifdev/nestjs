@@ -6,16 +6,18 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message-dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { ParseIntIdPipe } from '../common/pipes/parse-int-id.pipe';
 @Controller('message')
+@UsePipes(ParseIntIdPipe)
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
@@ -27,7 +29,8 @@ export class MessageController {
 
   @HttpCode(HttpStatus.OK)
   @Get(':messageId')
-  findOne(@Param('messageId', ParseIntPipe) messageId: number) {
+  findOne(@Param('messageId') messageId: number) {
+    console.log('MessageID', messageId);
     return this.messageService.findOne(messageId);
   }
 
@@ -48,7 +51,7 @@ export class MessageController {
 
   @HttpCode(HttpStatus.OK)
   @Delete(':messageId')
-  delete(@Param('messageId', ParseIntPipe) messageId: number) {
+  delete(@Param('messageId') messageId: number) {
     return this.messageService.remove(messageId);
   }
 }

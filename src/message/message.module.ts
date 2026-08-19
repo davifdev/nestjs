@@ -4,8 +4,10 @@ import { MessageService } from './message.service';
 import { Message } from './entities/message.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PersonsModule } from '../persons/persons.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
+    ConfigModule,
     TypeOrmModule.forFeature([Message]),
     forwardRef(() => PersonsModule),
   ],

@@ -6,13 +6,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PersonsService } from '../persons/persons.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class MessageService {
   constructor(
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
     private readonly personService: PersonsService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const databaseUserName = this.configService.get('DATABASE_USERNAME');
+    console.log(databaseUserName);
+  }
 
   async findAll(paginationDto?: PaginationDto) {
     const limit = paginationDto?.limit;

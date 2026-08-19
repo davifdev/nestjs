@@ -6,29 +6,42 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message-dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
+
+import { AddHeaderInterceptor } from '../common/interceptors/add-header.interceptor';
+import { TimingConnectionInterceptor } from '../common/interceptors/time-connection.interceptor';
+import { ErrorHandlingInterceptor } from '../common/interceptors/error-handling.interceptor';
+
+import { ReqDataParam } from '../common/params/req-data-param.decorator';
+
 @Controller('message')
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
+  @UseInterceptors(TimingConnectionInterceptor, ErrorHandlingInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
-  findAll(@Query() pagination: { limit: string; offset: string }) {
-    const { limit = 10, offset = 0 } = pagination;
-    console.log(`limit: ${limit} offset: ${offset}`);
-    return this.messageService.findAll();
+  findAll(
+    @Query() paginationDto: PaginationDto,
+    @ReqDataParam('method') method,
+  ) {
+    console.log(method);
+
+    return this.messageService.findAll(paginationDto);
   }
 
+  @UseInterceptors(AddHeaderInterceptor, ErrorHandlingInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get(':messageId')
-  findOne(@Param('messageId', ParseIntPipe) messageId: number) {
+  findOne(@Param('messageId') messageId: number) {
     return this.messageService.findOne(messageId);
   }
 
@@ -49,7 +62,7 @@ export class MessageController {
 
   @HttpCode(HttpStatus.OK)
   @Delete(':messageId')
-  delete(@Param('messageId', ParseIntPipe) messageId: number) {
+  delete(@Param('messageId') messageId: number) {
     return this.messageService.remove(messageId);
   }
 }

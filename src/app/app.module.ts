@@ -9,6 +9,7 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import globalConfig from '../global-config/global.config';
 import { GlobalConfigModule } from '../global-config/global-config.module';
+import { AuthModule } from '../auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -44,6 +45,7 @@ import { GlobalConfigModule } from '../global-config/global-config.module';
     MessageModule,
     PersonsModule,
     GlobalConfigModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

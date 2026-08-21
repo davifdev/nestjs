@@ -4,6 +4,7 @@ import { PersonsController } from './persons.controller';
 import { Person } from './entities/person.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MessageModule } from '../message/message.module';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Person]),

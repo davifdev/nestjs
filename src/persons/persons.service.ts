@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Person } from './entities/person.entity';
 import { HashingServiceProtocol } from '../auth/hashing/hashing.service';
+import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
 @Injectable()
 export class PersonsService {
   constructor(
@@ -21,6 +26,7 @@ export class PersonsService {
       name: createPersonDto.name,
       email: createPersonDto.email,
       passwordHash,
+      routePolicies: createPersonDto.routePolicies,
     };
 
     const person = this.personRepository.create(newPerson);
@@ -41,7 +47,16 @@ export class PersonsService {
     return person;
   }
 
-  async update(id: number, updatePersonDto: UpdatePersonDto) {
+  async update(
+    id: number,
+    updatePersonDto: UpdatePersonDto,
+    tokenPayload: TokenPayloadDto,
+  ) {
+    console.log(id, tokenPayload.sub);
+    if (id !== tokenPayload.sub) {
+      throw new UnauthorizedException('User not Authorized for update');
+    }
+
     const partialPersonDto = {
       name: updatePersonDto?.name,
       passwordHash: updatePersonDto?.password,
@@ -65,7 +80,10 @@ export class PersonsService {
     return await this.personRepository.save(person);
   }
 
-  async remove(id: number) {
+  async remove(id: number, tokenPayload: TokenPayloadDto) {
+    if (id !== tokenPayload.sub) {
+      throw new UnauthorizedException('User not Authorized for delete');
+    }
     const personExists = await this.personRepository.findOne({
       where: { id },
     });

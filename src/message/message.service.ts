@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Message } from './entities/message.entity';
 import { CreateMessageDto } from './dto/create-message-dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
@@ -7,6 +12,8 @@ import { Repository } from 'typeorm';
 import { PersonsService } from '../persons/persons.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { ConfigService } from '@nestjs/config';
+import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
+
 @Injectable()
 export class MessageService {
   constructor(
@@ -26,6 +33,7 @@ export class MessageService {
     const messages = await this.messageRepository.find({
       take: limit,
       skip: offset,
+      relations: { from: true, to: true },
     });
 
     return messages;
@@ -38,6 +46,7 @@ export class MessageService {
   async findOne(messageId: number) {
     const message = await this.messageRepository.findOne({
       where: { id: messageId },
+      relations: { from: true, to: true },
     });
 
     if (!message) {
@@ -49,10 +58,13 @@ export class MessageService {
     // throw new HttpException('Message not found', HttpStatus.NOT_FOUND);
   }
 
-  async create(createMessageDto: CreateMessageDto) {
-    const { fromId, toId } = createMessageDto;
+  async create(
+    createMessageDto: CreateMessageDto,
+    tokenPayload: TokenPayloadDto,
+  ) {
+    const { toId } = createMessageDto;
 
-    const from = await this.personService.findOne(fromId);
+    const from = await this.personService.findOne(tokenPayload.sub);
     const to = await this.personService.findOne(toId);
 
     const newMessage = {
@@ -78,12 +90,19 @@ export class MessageService {
     };
   }
 
-  async update(messageId: number, updateMessageDto: UpdateMessageDto) {
+  async update(
+    messageId: number,
+    updateMessageDto: UpdateMessageDto,
+    tokenPayload: TokenPayloadDto,
+  ) {
     const message = await this.findOne(messageId);
-
     if (!message) {
       this.throwNotFoundError('Message not found');
       return;
+    }
+
+    if (message.from?.id !== tokenPayload.sub) {
+      throw new ForbiddenException('User is not authorized for update message');
     }
 
     message.text = updateMessageDto?.text ?? message?.text;
@@ -92,12 +111,16 @@ export class MessageService {
     return this.messageRepository.save(message);
   }
 
-  async remove(messageId: number) {
-    const message = await this.messageRepository.findOne({
-      where: { id: messageId },
-    });
+  async remove(messageId: number, tokenPayload: TokenPayloadDto) {
+    const message = await this.findOne(messageId);
 
     if (!message) return this.throwNotFoundError('Message not found');
+
+    if (message.from?.id !== tokenPayload.sub) {
+      throw new UnauthorizedException(
+        'User is not authorized for update message',
+      );
+    }
 
     await this.messageRepository.delete(messageId);
 

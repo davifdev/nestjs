@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Message } from '../../message/entities/message.entity';
+import { RoutePolicies } from '../../auth/enum/route-policies.enum';
 @Entity()
 export class Person {
   @PrimaryGeneratedColumn()
@@ -34,4 +35,10 @@ export class Person {
 
   @OneToMany(() => Message, (message) => message.to)
   receivesMessage: Message[];
+
+  @Column({ default: true })
+  active: boolean;
+
+  @Column({ type: 'simple-array', default: [] })
+  routePolicies: RoutePolicies[];
 }

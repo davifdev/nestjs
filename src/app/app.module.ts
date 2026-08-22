@@ -10,6 +10,8 @@ import * as Joi from '@hapi/joi';
 import globalConfig from '../global-config/global.config';
 import { GlobalConfigModule } from '../global-config/global-config.module';
 import { AuthModule } from '../auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import path from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -41,6 +43,10 @@ import { AuthModule } from '../auth/auth.module';
           synchronize: globalConfigurations.database.synchronize,
         };
       },
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, '..', '..', 'images'),
+      serveRoot: '/pictures',
     }),
     MessageModule,
     PersonsModule,

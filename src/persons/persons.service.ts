@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -10,6 +11,9 @@ import { Repository } from 'typeorm';
 import { Person } from './entities/person.entity';
 import { HashingServiceProtocol } from '../auth/hashing/hashing.service';
 import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
+import path from 'path';
+import fs from 'fs/promises';
+
 @Injectable()
 export class PersonsService {
   constructor(
@@ -94,5 +98,30 @@ export class PersonsService {
     this.personRepository.remove(personExists);
 
     return personExists;
+  }
+
+  async uploadPicture(
+    picture: Express.Multer.File,
+    tokenPayload: TokenPayloadDto,
+  ) {
+    if (picture.size < 1024) {
+      throw new BadRequestException('File to small');
+    }
+
+    const person = await this.findOne(tokenPayload.sub);
+    const fileExtension = path
+      .extname(picture.originalname)
+      .toLowerCase()
+      .substring(1);
+    const fileName = `${tokenPayload.sub}.${fileExtension}`;
+    const fileFullPath = path.resolve(process.cwd(), 'images', fileName);
+
+    await fs.writeFile(fileFullPath, picture.buffer);
+
+    person.picture = fileName;
+
+    await this.personRepository.save(person);
+
+    return person;
   }
 }

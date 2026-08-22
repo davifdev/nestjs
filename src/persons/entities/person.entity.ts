@@ -41,4 +41,7 @@ export class Person {
 
   @Column({ type: 'simple-array', default: [] })
   routePolicies: RoutePolicies[];
+
+  @Column({ default: '' })
+  picture: string;
 }

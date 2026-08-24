@@ -1,11 +1,4 @@
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-} from 'class-validator';
-import { RoutePolicies } from '../../auth/enum/route-policies.enum';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class CreatePersonDto {
   @IsString()
@@ -22,7 +15,4 @@ export class CreatePersonDto {
   @IsNotEmpty()
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
-
-  @IsEnum(RoutePolicies, { each: true })
-  routePolicies: RoutePolicies[];
 }

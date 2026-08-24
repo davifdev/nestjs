@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -23,18 +24,34 @@ export class PersonsService {
   ) {}
 
   async create(createPersonDto: CreatePersonDto) {
-    const passwordHash = await this.hashingService.hash(
-      createPersonDto.password,
-    );
-    const newPerson = {
-      name: createPersonDto.name,
-      email: createPersonDto.email,
-      passwordHash,
-      routePolicies: createPersonDto.routePolicies,
-    };
+    try {
+      const passwordHash = await this.hashingService.hash(
+        createPersonDto.password,
+      );
 
-    const person = this.personRepository.create(newPerson);
-    return this.personRepository.save(person);
+      const newPerson = {
+        name: createPersonDto.name,
+        email: createPersonDto.email,
+        passwordHash,
+      };
+
+      const person = this.personRepository.create(newPerson);
+      await this.personRepository.save(person);
+
+      return person;
+    } catch (error) {
+      console.log(error);
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === '23505'
+      ) {
+        throw new ConflictException('Email já está cadastrado');
+      }
+
+      throw error;
+    }
   }
 
   async findOne(id: number) {

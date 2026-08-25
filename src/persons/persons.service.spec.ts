@@ -9,6 +9,7 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   ConflictException,
+  ForbiddenException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -193,6 +194,22 @@ describe('PersonsService', () => {
       expect(personService.findOne).toHaveBeenCalledWith(personId);
       expect(personRepository.remove).toHaveBeenCalledWith(existPerson);
       expect(result).toEqual(existPerson);
+    });
+
+    it('throw ForbiddenException if not authorized', async () => {
+      const personId = 1;
+      const tokenPayload = { sub: 2 } as any;
+      await expect(
+        personService.remove(personId, tokenPayload),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('throw NotFoundException if user not found', async () => {
+      const personId = 1;
+      const tokenPayload = { sub: personId } as any;
+      await expect(
+        personService.remove(personId, tokenPayload),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
-// import { MyExceptionFilter } from './common/filters/my-exception.filter';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +13,11 @@ async function bootstrap() {
     }),
   );
 
-  // app.useGlobalFilters(new MyExceptionFilter());
+  if (process.env.NODE_ENV === 'production') {
+    app.use(helmet());
+    app.enableCors();
+  }
+
   await app.listen(process.env.PORT ?? 3000);
 }
 

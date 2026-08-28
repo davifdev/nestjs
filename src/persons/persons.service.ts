@@ -113,10 +113,7 @@ export class PersonsService {
     return personExists;
   }
 
-  async uploadPicture(
-    picture: Express.Multer.File,
-    tokenPayload: TokenPayloadDto,
-  ) {
+  async uploadPicture(picture: any, tokenPayload: TokenPayloadDto) {
     if (picture.size < 1024) {
       throw new BadRequestException('File to small');
     }

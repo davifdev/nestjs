@@ -12,8 +12,13 @@ import { GlobalConfigModule } from '../global-config/global-config.module';
 import { AuthModule } from '../auth/auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import path from 'path';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60000, limit: 1, blockDuration: 5000 }],
+    }),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         DATABASE_TYPE: Joi.required(),
@@ -54,6 +59,6 @@ import path from 'path';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

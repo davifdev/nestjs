@@ -18,7 +18,6 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { AuthTokenGuard } from '../auth/guards/auth-token.guard';
 import { type Request } from 'express';
-import { REQUEST_TOKEN_PAYLOAD_KEY } from '../auth/constants/auth.constants';
 import { TokenPayloadParam } from '../auth/params/token-payload.param';
 import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -35,7 +34,7 @@ export class PersonsController {
   @UseGuards(AuthTokenGuard)
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
-    console.log(req[REQUEST_TOKEN_PAYLOAD_KEY]);
+    //console.log(req[REQUEST_TOKEN_PAYLOAD_KEY]);
     return this.personsService.findOne(+id);
   }
 
@@ -68,7 +67,7 @@ export class PersonsController {
         .addMaxSizeValidator({ maxSize: 2585366 })
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     )
-    picture: Express.Multer.File,
+    picture: any,
     @TokenPayloadParam() tokenPayload: TokenPayloadDto,
   ) {
     return this.personsService.uploadPicture(picture, tokenPayload);

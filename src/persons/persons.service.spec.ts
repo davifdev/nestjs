@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PersonsService } from './persons.service';
 import { Person } from './entities/person.entity';
 import { HashingServiceProtocol } from '../auth/hashing/hashing.service';
